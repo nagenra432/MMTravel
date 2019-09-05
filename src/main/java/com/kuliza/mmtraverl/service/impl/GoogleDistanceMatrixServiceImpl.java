@@ -20,6 +20,11 @@ import com.kuliza.mmtraverl.model.TravelInfo;
 import com.kuliza.mmtraverl.model.TravelMode;
 import com.kuliza.mmtraverl.service.GoogleDistanceMatrixService;
 
+/*
+ *  GoogleDistanceMatrixService calling Google DistanceMatrixService.
+ *   Finding Distance and Travel Time Information  
+ */
+
 @Service
 public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixService {
 	
@@ -55,9 +60,24 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 		TravelInfo travelInfo=null;
 		
 		//List<String> googleurls=new ArrayList<>();
+		
+		/*
+		 * TODO instead of calling one by one Google Rest call, 
+		*  we have to enable in Multi Threaded environment
+		*  using Callable interface for Asynchronous Response.   
+		*/
+		
+		
 		RestTemplate restTemplate=new RestTemplate();
 		String googleURL =null;
 		for (TravelMode travelMode : modes) {
+			
+			/*
+			 * Except Transit TravelMode Google Rest Api calling with 'mode' Parameter
+			 * mode Exp : driving,walking,bicycling 
+			 * If we are not pass mode Google API will take driving as default mode 
+			 */
+			
 			if (!travelMode.equals(TravelMode.TRANSIT)) {
 				 googleURL=googleUrlBuilder(lat1,long1,lat2, long2,mode,travelMode.getMode());
 				 
@@ -71,6 +91,11 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 				 modeOfDistanceMatrix.put(travelMode.getMode(), hours);
 				
 			}else {
+				
+				/*
+				 * In Transit TravelMode Google Rest Api calling with 'transit_mode' Parameter
+				 * transit_mode Exp : bus, train,tram ...etc   
+				 */
 				
 				for (TravelMode transitModes : TravelMode.getAllTransitModes()) {
 					googleURL=googleUrlBuilder(lat1,long1,lat2, long2,transitMode,transitModes.getMode());
@@ -91,6 +116,9 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 		return travelInfo;
 	}
 	
+	/*
+	 * Building Google url
+	 */
 	private String googleUrlBuilder(double lat1,double long1, double lat2,  double long2,String mode,String modeValue) {
 		StringBuilder urlbuilder=new StringBuilder();
 		urlbuilder.append(gooleMatrixURI);
@@ -101,6 +129,13 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 		
 		return urlbuilder.toString();
 	}
+	
+	/*
+	 * Taking Map key is mode or transit_mode and value is Mints Time
+	 * Sorting based on Time
+	 * Checking mins and hours and days building Response 
+	 * Response key is Mode and value is Min and Max travel time
+	 */
 	
 	private TravelInfo extractTravelInfo(Map<String, Integer> modeOfDistanceMatrix) {
 		TravelInfo travelInfo=new TravelInfo();
@@ -145,6 +180,9 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 		return travelInfo;
 	}
 	
+	/*
+	 * Converting google duration to mins
+	 */
 	public int daysToHours(String duration) {
 		int days = 0;
 		int hours = 0;

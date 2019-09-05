@@ -28,7 +28,11 @@ public class DistanceCalculator {
 	@Autowired
 	private DistanceCalculateService distanceCalculateService; 
 
-	
+	/*
+	 * This service will give Max and Min Travel time based on travel Mode
+	 * API Service call format below
+	 * exp: http://localhost:8080/managedmethods/api/caltraveTime/41.43206:-81.38992/40.6655101:-73.89188969999998
+	 */
 	@PostMapping(value = "/caltraveTime/{latitude1}:{longitude1}/{latitude2}:{longitude2}")
 	public ResponseEntity<TravelInfo>  calTraveTime(@Valid @Pattern(regexp = LAT_LONG_REGEXP,message="Latitude1 not allow Characters") @PathVariable("latitude1") String latitude1,
 			@Valid @Pattern(regexp = LAT_LONG_REGEXP,message="Latitude2 not allow Characters") @PathVariable("latitude2") String latitude2,

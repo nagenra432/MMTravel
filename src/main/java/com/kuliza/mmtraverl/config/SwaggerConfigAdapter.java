@@ -4,6 +4,10 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
+/*
+ * Enabling access for resource and jars folder for Swagger.   
+ */
+
 @EnableWebMvc
 public class SwaggerConfigAdapter extends WebMvcConfigurationSupport{
 	@Override
