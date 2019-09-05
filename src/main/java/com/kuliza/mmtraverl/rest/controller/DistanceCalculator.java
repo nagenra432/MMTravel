@@ -7,8 +7,8 @@ import javax.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,7 +42,7 @@ public class DistanceCalculator {
 		  }
 		}
 	 */
-	@PostMapping(value = "/caltraveTime/{latitude1}:{longitude1}/{latitude2}:{longitude2}")
+	@GetMapping(value = "/caltraveTime/{latitude1}:{longitude1}/{latitude2}:{longitude2}")
 	public ResponseEntity<TravelInfo>  calTraveTime(@Valid @Pattern(regexp = LAT_LONG_REGEXP,message="Latitude1 not allow Characters") @PathVariable("latitude1") String latitude1,
 			@Valid @Pattern(regexp = LAT_LONG_REGEXP,message="Latitude2 not allow Characters") @PathVariable("latitude2") String latitude2,
 			@Valid @Pattern(regexp = LAT_LONG_REGEXP,message="Longitude1 not allow Characters") @PathVariable("longitude1") String longitude1,
