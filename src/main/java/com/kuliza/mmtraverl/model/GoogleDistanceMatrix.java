@@ -2,6 +2,8 @@ package com.kuliza.mmtraverl.model;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 
 @Data
@@ -15,6 +17,7 @@ public class GoogleDistanceMatrix {
 		public class Elements{
 			private InnerInfo distance;
 			private InnerInfo duration;
+			@NotNull
 			private String status;
 			public class InnerInfo{
 				private String text;

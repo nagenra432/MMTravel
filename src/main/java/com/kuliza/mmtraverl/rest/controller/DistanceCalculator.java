@@ -55,7 +55,7 @@ public class DistanceCalculator {
 			 GeoLocation destination=GeoLocationAdapter.convertLatLag(latitude2, longitude2);		
 			 travelInfo=distanceCalculateService.calculateTraveTime(source, destination);
 	        }catch (Exception e) {
-	        	 return new ResponseEntity<>(null, null, HttpStatus.INTERNAL_SERVER_ERROR);
+	        	 return new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT);
 			}
 	        return new ResponseEntity<>(travelInfo, HttpStatus.OK);
 	}

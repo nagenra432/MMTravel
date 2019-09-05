@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kuliza.mmtraverl.model.GoogleDistanceMatrix;
 import com.kuliza.mmtraverl.model.TravelInfo;
 import com.kuliza.mmtraverl.model.TravelMode;
@@ -70,6 +71,7 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 		
 		RestTemplate restTemplate=new RestTemplate();
 		String googleURL =null;
+		boolean is_zero_result=true;
 		for (TravelMode travelMode : modes) {
 			
 			/*
@@ -77,7 +79,7 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 			 * mode Exp : driving,walking,bicycling 
 			 * If we are not pass mode Google API will take driving as default mode 
 			 */
-			
+			try {
 			if (!travelMode.equals(TravelMode.TRANSIT)) {
 				 googleURL=googleUrlBuilder(lat1,long1,lat2, long2,mode,travelMode.getMode());
 				 
@@ -85,10 +87,14 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 				 ResponseEntity<String> result = restTemplate.getForEntity(googleURL, String.class);
 				 log.info(result.getBody());
 					
-				 Gson gson = new Gson();
+				 Gson gson = new GsonBuilder().serializeNulls().create();
 				 GoogleDistanceMatrix googleDistanceMatrix = gson.fromJson(result.getBody(), GoogleDistanceMatrix.class);
-				 int hours=daysToHours(googleDistanceMatrix.getRows().get(0).getElements().get(0).getDuration().getText());
-				 modeOfDistanceMatrix.put(travelMode.getMode(), hours);
+				 String data=googleDistanceMatrix.getRows().get(0).getElements().get(0).getDuration().getText();
+				 if(null!=data) {
+					 is_zero_result=false;
+					 int hours=daysToHours(data);
+					 modeOfDistanceMatrix.put(travelMode.getMode(), hours);
+				 }
 				
 			}else {
 				
@@ -103,16 +109,23 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 					ResponseEntity<String> result = restTemplate.getForEntity(googleURL, String.class);
 					log.info(result.getBody());
 					
-					Gson gson = new Gson();
+					Gson gson = new GsonBuilder().serializeNulls().create();
 					GoogleDistanceMatrix googleDistanceMatrix = gson.fromJson(result.getBody(), GoogleDistanceMatrix.class);
-					int hours=daysToHours(googleDistanceMatrix.getRows().get(0).getElements().get(0).getDuration().getText());
-					modeOfDistanceMatrix.put(travelMode.getMode(), hours);
+					 String data=googleDistanceMatrix.getRows().get(0).getElements().get(0).getDuration().getText();
+					 if(null!=data) {
+						 is_zero_result=false;
+						 int hours=daysToHours(data);
+						 modeOfDistanceMatrix.put(travelMode.getMode(), hours);
+					 }
 				}
+			}
 				
+			}catch (Exception e) {
+				log.error(e.getMessage());
 			}
 		}
-		
-		travelInfo=extractTravelInfo(modeOfDistanceMatrix);
+		if(!is_zero_result)
+		   travelInfo=extractTravelInfo(modeOfDistanceMatrix);
 		return travelInfo;
 	}
 	
