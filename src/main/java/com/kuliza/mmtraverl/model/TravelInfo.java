@@ -12,5 +12,6 @@ public class TravelInfo implements Serializable {
 
 	private Map<String, String> minTime;
 	private Map<String, String> maxTime;
+	private String statusCode="OK";
 
 }

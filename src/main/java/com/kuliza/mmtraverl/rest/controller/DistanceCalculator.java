@@ -39,7 +39,8 @@ public class DistanceCalculator {
 		  },
 		  "maxTime": {
 		    "walking": "6 days 6 hous "
-		  }
+		  },
+		  "statusCode": "OK"
 		}
 	 */
 	@GetMapping(value = "/caltraveTime/{latitude1}:{longitude1}/{latitude2}:{longitude2}")
@@ -55,7 +56,7 @@ public class DistanceCalculator {
 			 GeoLocation destination=GeoLocationAdapter.convertLatLag(latitude2, longitude2);		
 			 travelInfo=distanceCalculateService.calculateTraveTime(source, destination);
 	        }catch (Exception e) {
-	        	 return new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT);
+	        	 return new ResponseEntity<>(null, null, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 	        return new ResponseEntity<>(travelInfo, HttpStatus.OK);
 	}

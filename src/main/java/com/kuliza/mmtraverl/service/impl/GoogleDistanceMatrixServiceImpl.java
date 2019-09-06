@@ -1,5 +1,6 @@
 package com.kuliza.mmtraverl.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kuliza.mmtraverl.model.GoogleDistanceMatrix;
+import com.kuliza.mmtraverl.model.GoogleStatusCode;
 import com.kuliza.mmtraverl.model.TravelInfo;
 import com.kuliza.mmtraverl.model.TravelMode;
 import com.kuliza.mmtraverl.service.GoogleDistanceMatrixService;
@@ -68,7 +70,7 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 		*  using Callable interface for Asynchronous Response.   
 		*/
 		
-		
+		List<String> gogleLevelStatus=new ArrayList<>();
 		RestTemplate restTemplate=new RestTemplate();
 		String googleURL =null;
 		boolean is_zero_result=true;
@@ -89,13 +91,16 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 					
 				 Gson gson = new GsonBuilder().serializeNulls().create();
 				 GoogleDistanceMatrix googleDistanceMatrix = gson.fromJson(result.getBody(), GoogleDistanceMatrix.class);
+				 String levelStatusCode=googleDistanceMatrix.getRows().get(0).getElements().get(0).getStatus();
+				 gogleLevelStatus.add(levelStatusCode);
+				 if(levelStatusCode.equals(GoogleStatusCode.OK.name())){
 				 String data=googleDistanceMatrix.getRows().get(0).getElements().get(0).getDuration().getText();
 				 if(null!=data) {
 					 is_zero_result=false;
 					 int hours=daysToHours(data);
 					 modeOfDistanceMatrix.put(travelMode.getMode(), hours);
-				 }
-				
+			 	 }
+			 }
 			}else {
 				
 				/*
@@ -111,12 +116,16 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 					
 					Gson gson = new GsonBuilder().serializeNulls().create();
 					GoogleDistanceMatrix googleDistanceMatrix = gson.fromJson(result.getBody(), GoogleDistanceMatrix.class);
-					 String data=googleDistanceMatrix.getRows().get(0).getElements().get(0).getDuration().getText();
-					 if(null!=data) {
+					 String levelStatusCode=googleDistanceMatrix.getRows().get(0).getElements().get(0).getStatus();
+					 gogleLevelStatus.add(levelStatusCode);
+					 if(levelStatusCode.equals(GoogleStatusCode.OK.name())){
+					   String data=googleDistanceMatrix.getRows().get(0).getElements().get(0).getDuration().getText();
+ 					 if(null!=data) {
 						 is_zero_result=false;
 						 int hours=daysToHours(data);
 						 modeOfDistanceMatrix.put(travelMode.getMode(), hours);
 					 }
+				   }
 				}
 			}
 				
@@ -124,8 +133,13 @@ public class GoogleDistanceMatrixServiceImpl implements GoogleDistanceMatrixServ
 				log.error(e.getMessage());
 			}
 		}
-		if(!is_zero_result)
-		   travelInfo=extractTravelInfo(modeOfDistanceMatrix);
+		if(!is_zero_result && gogleLevelStatus.contains(GoogleStatusCode.OK.name())) {
+			 travelInfo=extractTravelInfo(modeOfDistanceMatrix);
+			 travelInfo.setStatusCode(GoogleStatusCode.OK.name());
+		}else {
+			travelInfo=new TravelInfo();
+			travelInfo.setStatusCode(gogleLevelStatus.get(0));
+		}
 		return travelInfo;
 	}
 	
