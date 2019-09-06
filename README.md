@@ -12,8 +12,8 @@ Request Info
 
 Method Type :- POST
 URL         :- http://{host}:{port}/managedmethods/api/caltraveTime
-Body:-
------
+
+Body :
 
 {
 "destination": {
