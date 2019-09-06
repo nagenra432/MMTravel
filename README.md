@@ -10,9 +10,19 @@ find below API inforamtion
 Request Info
 ------------
 
-Method Type :- GET
-URL         :- http://{host}:{port}/managedmethods/api/caltraveTime/{latitude1}:{longitude1}/{latitude2}:{longitude2}
-
+Method Type :- POST
+URL         :- http://{host}:{port}/managedmethods/api/caltraveTime
+Body:-
+{
+"destination": {
+	"latitude": 41.43206,
+	"longitude": -81.38992
+},
+"source": {
+	"latitude": 40.6655101,
+	"longitude": -73.89188969999998
+}
+}
 
 Results :-
 -------
