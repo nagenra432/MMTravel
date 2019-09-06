@@ -13,6 +13,8 @@ Request Info
 Method Type :- POST
 URL         :- http://{host}:{port}/managedmethods/api/caltraveTime
 Body:-
+-----
+
 {
 "destination": {
 	"latitude": 41.43206,
